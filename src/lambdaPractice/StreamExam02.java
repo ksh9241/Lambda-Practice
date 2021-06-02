@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -80,6 +83,58 @@ public class StreamExam02 {
 		
 		// Mapping
 		Stream<String> mappingStream = names.stream().map(String::toUpperCase); // [ERIC, ELENA, JAVA]
+		
+		//flatMap
+		List<List<String>> flatMapList = Arrays.asList(Arrays.asList("a"),
+												Arrays.asList("b"));
+		
+		//util.Arrays.ArrayList의 사용 예제
+		flatMapList.get(0).set(0, "c"); //O
+		//flatMapList.get(0).add("a"); // X
+		
+		String [] arrr = {"a", "b"};
+		List<String> flatMapList2 = new ArrayList<>(Arrays.asList(arrr));
+		flatMapList2.add("c"); // O
+		flatMapList2.set(0, "d"); // O
+
+		//Sorted
+		System.out.println(
+		IntStream.of(14, 11, 20, 39, 23)
+		.sorted()
+		.boxed()
+		.collect(Collectors.toList())
+		); // [11, 14, 20, 23, 39] 인자 없이 호출할 경우 asending
+		
+		List<String> lang = new ArrayList<>(Arrays.asList("Java", "Scala", "Groovy", "Python", "Go", "Swift"));
+		
+		System.out.println(
+		lang.stream()
+			.sorted()
+			.collect(Collectors.toList())
+		); // 오름차순
+		
+		System.out.println(
+		lang.stream()
+			.sorted(Comparator.reverseOrder())
+			.collect(Collectors.toList())
+		); // Comparator 인터페이스의 reverseOrder를 사용하여 내림차순으로 정렬하였다.
+		
+		System.out.println(
+			lang.stream()
+				.sorted(Comparator.comparingInt(String::length))
+				.collect(Collectors.toList())
+		); // length로 정렬 length가 동일한 경우 1번 index의 오름차순
+		
+		System.out.println(
+			lang.stream()
+				.sorted((s1, s2) -> s2.length() - s1.length())
+				.collect(Collectors.toList())
+		); // length로 내림차순 s1 : 앞의 인덱스, s2 : 뒤의 인덱스
+		
+			
+		
+		
+		
 		
 		// 데이터 출력 확인용 iterator
 		Iterator<String> test = filterStream.iterator();

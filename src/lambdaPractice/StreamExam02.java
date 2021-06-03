@@ -9,8 +9,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -131,10 +134,71 @@ public class StreamExam02 {
 				.collect(Collectors.toList())
 		); // length로 내림차순 s1 : 앞의 인덱스, s2 : 뒤의 인덱스
 		
-			
+		//Iterating
+		int sum = IntStream.of(1,3,5,7,9)
+							.peek(System.out :: println)
+							.sum();
 		
+		long count = IntStream.of(1,3,5,7,9).count();
+		long sum2 = IntStream.of(1,3,5,7,9).sum();
+		OptionalInt min = IntStream.of(1,3,5,7,9).min();
+		OptionalInt max = IntStream.of(1,3,5,7,9).max();
+		//Optional : NullPointException을 방지하기 위한 클래스이다.
 		
+//		DoubleStream.of(1.1, 2.2, 3.3, 4.4, 5.5) //데이터가 있을 땐 요구조건을 실행한다.
+		DoubleStream.of()						// 데이터가 없을 땐 실행하지 않는다.
+					.average()
+					.ifPresent(System.out::println); // ifPresent 메서드는 null을 체크하는 함수이다. 
 		
+		//Optional
+		Optional<String> optional = Optional.empty();
+		System.out.println(optional); // Optional.empty
+		System.out.println(optional.isPresent()); // false
+		
+		Optional<String> optional2 = Optional.ofNullable(getString());
+		String result = optional2.orElse("other"); // optional2 에 값이 없다면 other를 리턴
+		
+		List<String> listOpt = Optional.ofNullable(getList()).orElseGet(() -> new ArrayList<>());
+		
+		//reduce
+		OptionalInt reduced = IntStream.range(1, 4) // [1, 2, 3]
+										.reduce((a, b) -> {
+											return Integer.sum(a, b);
+										}); // 6
+
+		int reducedTwoParams = IntStream.range(1, 4)
+										.reduce(10, Integer::sum); // 16
+		
+		Integer reducedParams = Stream.of(1, 2, 3)
+									.reduce(10, // identity (계산을 위한 초기값. 값이없어도 리턴함)
+											Integer::sum, // accumuator (계산로직)
+											(a,b) -> {
+										System.out.println("combiner was called");
+										return a + b;
+									}); // 16
+		Integer reduceParallel = Arrays.asList(1, 2, 3)
+									.parallelStream() //병렬 처리를 하기 때문에 각 Arrays의 값 + 초기값 10은 각자 계산을 진행한다.
+									.reduce(10, 
+											Integer::sum,
+											(a, b) -> {
+												System.out.println("combiner was called");
+												return a + b;
+											}); // 36
+		// Integer::sum 이 총 3번 동작한다. 초기값 10에 각 스트림 값을 더한 세 개의 값(11, 12, 13)을 계산한다.
+		
+		//Matching
+		List<String> names2 = Arrays.asList("Eric", "Elena", "Java");
+		
+		boolean anyMatch = names2.stream()
+								.anyMatch(name -> name.contains("a")); // 객체 중 매개변수 값이 하나롣 있는지? = true
+		
+		boolean allMatch = names2.stream()
+								.allMatch(name -> name.length() > 3); // 모든 배열의 객체들의 length가 3보다 큰가? = true
+		
+		boolean noneMatch = names2.stream()
+								.noneMatch(name -> name.endsWith("s")); // 모든 배열의 객체들의 끝에 s가 있는가?? = No 그러므로 true
+		
+		names2.stream().forEach(System.out::println);
 		
 		// 데이터 출력 확인용 iterator
 		Iterator<String> test = filterStream.iterator();
@@ -143,6 +207,13 @@ public class StreamExam02 {
 		}
 	}
 	
+	private static List<String> getList() {
+		return null;
+	}
+	private static String getString() {
+		return null;
+	}
+
 	// Empty Stream
 	public Stream<String> streamOf(List<String> list){
 		return list == null || list.isEmpty() ? Stream.empty() : list.stream();
